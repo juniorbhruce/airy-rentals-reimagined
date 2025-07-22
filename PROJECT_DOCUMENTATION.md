@@ -10,6 +10,7 @@ This is an Airbnb-like property rental platform with real-time functionality pow
 - **State Management**: React Query
 - **Routing**: React Router
 - **Authentication**: Supabase Auth
+- **Theming**: Light/dark mode with persistent preferences
 
 ## Database Schema
 
@@ -73,15 +74,18 @@ This is an Airbnb-like property rental platform with real-time functionality pow
    - created_at (timestamp)
 
 ## Real-time Features
-- Real-time property updates
+- Real-time property updates using Supabase Realtime
 - Instant booking confirmation
 - Live chat (to be implemented)
 - Real-time notifications (to be implemented)
+- Custom useRealtime hook for subscribing to database changes
 
 ## Authentication
-- Email/password login
+- Email/password login using Supabase Auth
 - Social login (Google, Facebook)
 - Forgot password functionality
+- AuthContext provider for managing auth state across the app
+- Protected routes for authenticated users
 
 ## Current Application Pages
 1. **Home (/)** - Landing page with featured properties
@@ -128,6 +132,11 @@ This is an Airbnb-like property rental platform with real-time functionality pow
 - `/src/components/ui/` - shadcn UI components
 - `/src/pages/` - Page components for routes
 - `/src/hooks/` - Custom React hooks
+  - `useRealtime.ts` - Hook for Supabase Realtime subscriptions
+  - `use-mobile.tsx` - Hook for responsive mobile detection
+- `/src/contexts/` - React context providers
+  - `AuthContext.tsx` - Authentication state and methods
+  - `ThemeContext.tsx` - Theme management (light/dark)
 - `/src/lib/` - Utility functions
 - `/src/integrations/supabase/` - Supabase client and types
 - `/public/` - Static assets
@@ -145,8 +154,10 @@ This is an Airbnb-like property rental platform with real-time functionality pow
 4. Access the application at `http://localhost:5173/`
 
 ## Next Priority Tasks
-1. Implement the authentication logic with Supabase
-2. Connect property listings to the database
-3. Build the booking system
-4. Develop the review functionality
-5. Create user profiles and dashboards
+1. ✅ Implement the authentication logic with Supabase - COMPLETED
+2. ✅ Add light/dark theme functionality - COMPLETED
+3. ✅ Add real-time functionality with Supabase Realtime - COMPLETED
+4. Connect property listings to the database
+5. Build the booking system
+6. Develop the review functionality
+7. Create user profiles and dashboards
