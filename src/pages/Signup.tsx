@@ -1,16 +1,21 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Facebook, Mail, Eye, EyeOff } from 'lucide-react';
+import { Facebook, Mail, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Header } from '@/components/Header';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/use-toast';
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,10 +24,41 @@ export default function Signup() {
     agreeToTerms: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup:', formData);
+    
+    if (!formData.agreeToTerms) {
+      toast({
+        title: "Terms required",
+        description: "You must agree to the terms and conditions",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      const { error } = await signUp(formData.email, formData.password);
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Registration successful",
+        description: "Please check your email to confirm your account",
+      });
+      
+      navigate('/login');
+    } catch (error: any) {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Please try again later",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -129,9 +165,16 @@ export default function Signup() {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-hero hover:opacity-90"
-                  disabled={!formData.agreeToTerms}
+                  disabled={!formData.agreeToTerms || isLoading}
                 >
-                  Create account
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating account...
+                    </>
+                  ) : (
+                    "Create account"
+                  )}
                 </Button>
               </form>
               

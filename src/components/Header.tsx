@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, User, Globe } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Search, Menu, User, Globe, LogOut, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -8,11 +8,17 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/40">
@@ -70,6 +76,15 @@ export const Header = () => {
               <Globe className="w-4 h-4" />
             </Button>
 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-full"
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-full border border-border p-2">
@@ -82,18 +97,49 @@ export const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>
-                  <Link to="/signup" className="w-full">Sign up</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/login" className="w-full">Log in</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/host" className="w-full">Host your home</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/help" className="w-full">Help</Link>
-                </DropdownMenuItem>
+                {user ? (
+                  <>
+                    <DropdownMenuItem className="font-medium text-sm">
+                      {user.email}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link to="/account" className="w-full">Account</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/host" className="w-full">Host your home</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/trips" className="w-full">My trips</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/wishlist" className="w-full">Wishlist</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={async () => {
+                      await signOut();
+                      navigate('/');
+                    }}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem>
+                      <Link to="/signup" className="w-full">Sign up</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/login" className="w-full">Log in</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/host" className="w-full">Host your home</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/help" className="w-full">Help</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
